@@ -1,21 +1,30 @@
+import {
+  useCallback,
+  useEffect,
+  useState
+} from 'react'
+
+import { useRouter } from 'next/router'
+import { ParsedUrlQuery } from 'querystring'
+
+import { getAddLiquidityDefaultPool } from '@/application/ammV3PoolInfoAndLiquidity/ammAndLiquidity'
 import useAppSettings from '@/application/common/useAppSettings'
 import useNotification from '@/application/notification/useNotification'
 import useToken from '@/application/token/useToken'
 import { throttle } from '@/functions/debounce'
-import toPubString from '@/functions/format/toMintString'
-import { areShallowEqual, isStringInsensitivelyEqual } from '@/functions/judgers/areEqual'
+import {
+  areShallowEqual,
+  isStringInsensitivelyEqual
+} from '@/functions/judgers/areEqual'
 import { objectShakeFalsy } from '@/functions/objectMethods'
 import useAsyncEffect from '@/hooks/useAsyncEffect'
 import { useRecordedEffect } from '@/hooks/useRecordedEffect'
-import { getAddLiquidityDefaultPool } from '@/application/ammV3PoolInfoAndLiquidity/ammAndLiquidity'
 import { EnumStr } from '@/types/constants'
-import { useRouter } from 'next/router'
-import { ParsedUrlQuery } from 'querystring'
-import { useCallback, useEffect, useState } from 'react'
+import { ApiPoolInfoItem } from '@raydium-io/raydium-sdk'
+
 import useConnection from '../connection/useConnection'
 import { getUserTokenEvenNotExist } from '../token/getUserTokenEvenNotExist'
 import useLiquidity from './useLiquidity'
-import { ApiPoolInfoItem } from '@raydium-io/raydium-sdk'
 
 export default function useLiquidityUrlParser() {
   const { query, pathname, replace } = useRouter()
@@ -131,6 +140,8 @@ export default function useLiquidityUrlParser() {
     // parse amount
     const coin1Amount = urlCoin1Mint ? urlCoin1Amount : urlCoin2Mint ? urlCoin2Amount : undefined
     const coin2Amount = urlCoin2Mint ? urlCoin2Amount : urlCoin1Mint ? urlCoin1Amount : undefined
+    console.log(coin2Amount)
+    console.log(coin2Amount)
     if (coin1Amount) useLiquidity.setState({ coin1Amount: coin1Amount })
     if (coin2Amount) useLiquidity.setState({ coin2Amount: coin2Amount })
 

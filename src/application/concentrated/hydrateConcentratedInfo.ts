@@ -1,22 +1,34 @@
-import { ClmmPoolPersonalPosition, Price } from '@raydium-io/raydium-sdk'
-import { PublicKey } from '@solana/web3.js'
-
 import { BN } from 'bn.js'
 
+import { createCachedObject } from '@/functions/createCachedFunction'
 import toPubString from '@/functions/format/toMintString'
 import { toPercent } from '@/functions/format/toPercent'
 import { toTokenAmount } from '@/functions/format/toTokenAmount'
 import toUsdCurrency from '@/functions/format/toUsdCurrency'
-import { coverlyMergeObject, mergeObject } from '@/functions/merge'
-import { gt, lt } from '@/functions/numberish/compare'
-import { add, div, mul } from '@/functions/numberish/operations'
+import { coverlyMergeObject } from '@/functions/merge'
+import {
+  gt,
+  lt
+} from '@/functions/numberish/compare'
+import {
+  add,
+  div,
+  mul
+} from '@/functions/numberish/operations'
 import toFraction from '@/functions/numberish/toFraction'
+import {
+  ClmmPoolPersonalPosition,
+  Price
+} from '@raydium-io/raydium-sdk'
+import { PublicKey } from '@solana/web3.js'
 
 import { SplToken } from '../token/type'
 import useToken from '../token/useToken'
 import { createSplToken } from '../token/useTokenListsLoader'
-import { decimalToFraction, recursivelyDecimalToFraction } from '../txTools/decimal2Fraction'
-
+import {
+  decimalToFraction,
+  recursivelyDecimalToFraction
+} from '../txTools/decimal2Fraction'
 import {
   GetAprParameters,
   GetAprPoolTickParameters,
@@ -25,8 +37,11 @@ import {
   getPoolTickAprCore,
   getPositonAprCore
 } from './calcApr'
-import { HydratedConcentratedInfo, SDKParsedConcentratedInfo, UserPositionAccount } from './type'
-import { createCachedObject } from '@/functions/createCachedFunction'
+import {
+  HydratedConcentratedInfo,
+  SDKParsedConcentratedInfo,
+  UserPositionAccount
+} from './type'
 
 export default function hydrateConcentratedInfo(concentratedInfo: SDKParsedConcentratedInfo): HydratedConcentratedInfo {
   const hydrate1 = hydratePoolInfo(concentratedInfo)
@@ -339,9 +354,12 @@ function hydrateUserPositionAccounnt(
 }
 
 function checkIsInRange(sdkConcentratedInfo: SDKParsedConcentratedInfo, userPositionAccount: ClmmPoolPersonalPosition) {
-  const currentPrice = decimalToFraction(sdkConcentratedInfo.state.currentPrice)
-  const priceLower = decimalToFraction(userPositionAccount.priceLower)
-  const priceUpper = decimalToFraction(userPositionAccount.priceUpper)
+  const currentPrice = (sdkConcentratedInfo.state.currentPrice).toNumber()
+  console.log('currentPrice', currentPrice)
+  const priceLower = (userPositionAccount.priceLower).toNumber()
+  console.log('priceLower', priceLower)
+  const priceUpper = (userPositionAccount.priceUpper).toNumber()
+  console.log('priceUpper', priceUpper)
   return gt(currentPrice, priceLower) && lt(currentPrice, priceUpper)
 }
 

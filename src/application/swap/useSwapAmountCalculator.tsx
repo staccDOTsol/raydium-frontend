@@ -1,16 +1,20 @@
-import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
-import { WSOL } from '@raydium-io/raydium-sdk'
+import { useRouter } from 'next/router'
 
 import { getAllSwapableRouteInfos } from '@/application/ammV3PoolInfoAndLiquidity/ammAndLiquidity'
 import { isMintEqual } from '@/functions/judgers/areEqual'
 import { makeAbortable } from '@/functions/makeAbortable'
-import { eq, isMeaningfulNumber } from '@/functions/numberish/compare'
+import {
+  eq,
+  isMeaningfulNumber
+} from '@/functions/numberish/compare'
 import { minus } from '@/functions/numberish/operations'
 import { toString } from '@/functions/numberish/toString'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useIdleEffect } from '@/hooks/useIdleEffect'
-import { useEffect } from 'react'
+import { WSOL } from '@raydium-io/raydium-sdk'
+
 import useAppSettings from '../common/useAppSettings'
 import useConnection from '../connection/useConnection'
 import useLiquidity from '../liquidity/useLiquidity'
@@ -57,7 +61,8 @@ export function useSwapAmountCalculator() {
   }, [connection, coin1?.mintString, coin2?.mintString, directionReversed])
 
   // get preflight
-  useIdleEffect(async () => {
+  useEffect( () => {
+    async function getPreflight() {
     if (!coin1 || !coin2) return // not fullfilled
     if (isMeaningfulNumber(userCoin1Amount) && isMeaningfulNumber(userCoin2Amount)) return // no need to check
     useSwap.setState({
@@ -74,9 +79,13 @@ export function useSwapAmountCalculator() {
       input: coin1,
       output: coin2,
       inputAmount: 1,
-      slippageTolerance: 0.05
+      slippageTolerance: 0.50
     }).catch((err) => console.error(err))) ?? {}
 
+    console.log(preflightCalcResult)
+    console.log(preflightCalcResult)
+    console.log(preflightCalcResult)
+    console.log(preflightCalcResult)
     const swapable = Boolean(bestResult?.poolReady)
     const canFindPools = Boolean(bestResult)
     useSwap.setState({
@@ -85,6 +94,8 @@ export function useSwapAmountCalculator() {
       swapable,
       selectedCalcResultPoolStartTimes: bestResultStartTimes
     })
+  }
+  getPreflight()
   }, [connection, coin1?.mintString, coin2?.mintString, directionReversed])
 
   const startCalc = useDebounce(

@@ -15,10 +15,15 @@ export default function toPubString(mint: PublicKeyish | undefined | null): stri
   if (pubCache.has(mint)) {
     return pubCache.get(mint)!
   } else {
+    try {
     const mintString = mint.toBase58()
     pubCache.set(mint, mintString)
     reversePubCache.set(mintString, new WeakRef(mint))
     return mintString
+    } catch {
+      return ''
+    }
+    
   }
 }
 

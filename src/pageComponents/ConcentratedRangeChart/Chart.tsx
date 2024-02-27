@@ -1,3 +1,26 @@
+import {
+  forwardRef,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
+
+import Decimal from 'decimal.js'
+import {
+  Area,
+  AreaChart,
+  ReferenceArea,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from 'recharts'
+
 import { PriceBoundaryReturn } from '@/application/concentrated/getNearistDataPoint'
 import { HydratedConcentratedInfo } from '@/application/concentrated/type'
 import { TimeBasis } from '@/application/concentrated/useConcentrated'
@@ -10,9 +33,7 @@ import { mul } from '@/functions/numberish/operations'
 import { shakeZero } from '@/functions/numberish/shakeZero'
 import { useEvent } from '@/hooks/useEvent'
 import { Fraction } from '@raydium-io/raydium-sdk'
-import Decimal from 'decimal.js'
-import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
-import { Area, AreaChart, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+
 import {
   AREA_CONFIG,
   boundaryColor,
@@ -89,7 +110,7 @@ export default forwardRef(function Chart(props: Props, ref) {
   } = props
   const points: HighlightPoint[] = useMemo(() => Object.assign([], chartOptions?.points || []), [chartOptions?.points])
   const [defaultMin, defaultMax] = useMemo(
-    () => [chartOptions?.initMinBoundaryX as Fraction, chartOptions?.initMaxBoundaryX as Fraction],
+    () => [currentPrice?.div(2) as Fraction, currentPrice?.mul(2) as Fraction],
     [chartOptions, currentPrice]
   )
   const poolIdRef = useRef<string | undefined>()

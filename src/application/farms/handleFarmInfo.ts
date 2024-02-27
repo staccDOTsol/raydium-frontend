@@ -301,7 +301,7 @@ function calculateFarmPoolAprs(
       const rewardtotalPricePerYear = toTotalPrice(
         new Fraction(rewardPerSecond, ONE)
           .div(TEN.pow(toBN(rewardToken.decimals || 1)))
-          .mul(new BN(60 * 60 * 24 * 365)),
+          .mul(new BN(60 * 60 * 24 * 365).toString()),
         rewardTokenPrice
       )
       if (!payload.tvl) return undefined
@@ -318,7 +318,7 @@ function calculateFarmPoolAprs(
       const rewardtotalPricePerYear = toTotalPrice(
         new Fraction(perSlotReward, ONE)
           .div(TEN.pow(toBN(rewardToken.decimals || 1)))
-          .mul(toBN(payload.blockSlotCountForSecond * 60 * 60 * 24 * 365)),
+          .mul(toBN(payload.blockSlotCountForSecond * 60 * 60 * 24 * 365).toString()),
         rewardTokenPrice
       )
       if (!payload.tvl) return undefined

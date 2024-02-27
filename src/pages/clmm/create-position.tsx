@@ -1,12 +1,21 @@
-import { createRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-
-import { Fraction, ZERO } from '@raydium-io/raydium-sdk'
+import {
+  createRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 import Decimal from 'decimal.js'
 import { twMerge } from 'tailwind-merge'
 
 import useAppSettings from '@/application/common/useAppSettings'
-import { calLowerUpper, getPriceBoundary, getTickPrice } from '@/application/concentrated/getNearistDataPoint'
+import {
+  calLowerUpper,
+  getPriceBoundary,
+  getTickPrice
+} from '@/application/concentrated/getNearistDataPoint'
 import txCreateConcentratedPosotion from '@/application/concentrated/txCreateConcentratedPosition'
 import useConcentrated, {
   ConcentratedStore,
@@ -17,11 +26,19 @@ import useConcentratedAmmSelector from '@/application/concentrated/useConcentrat
 import useConcentratedAmountCalculator from '@/application/concentrated/useConcentratedAmountCalculator'
 import useConcentratedInitCoinFiller from '@/application/concentrated/useConcentratedInitCoinFiller'
 import useConcentratedLiquidityUrlParser from '@/application/concentrated/useConcentratedLiquidityUrlParser'
-import { routeBackTo, routeTo } from '@/application/routeTools'
+import {
+  routeBackTo,
+  routeTo
+} from '@/application/routeTools'
+import { getTransferFeeInfo } from '@/application/token/getTransferFeeInfos'
+import { isToken2022 } from '@/application/token/isToken2022'
 import useToken from '@/application/token/useToken'
 import { decimalToFraction } from '@/application/txTools/decimal2Fraction'
 import useWallet from '@/application/wallet/useWallet'
+import { AsyncAwait } from '@/components/AsyncAwait'
+import { Token2022Badge } from '@/components/Badge'
 import Button, { ButtonHandle } from '@/components/Button'
+import CoinAvatar from '@/components/CoinAvatar'
 import CoinInputBox, { CoinInputBoxHandle } from '@/components/CoinInputBox'
 import Col from '@/components/Col'
 import CyberpunkStyleCard from '@/components/CyberpunkStyleCard'
@@ -31,15 +48,23 @@ import Icon from '@/components/Icon'
 import PageLayout from '@/components/PageLayout'
 import RefreshCircle from '@/components/RefreshCircle'
 import Row from '@/components/Row'
-import toPubString from '@/functions/format/toMintString'
+import Tooltip from '@/components/Tooltip'
 import toPercentString from '@/functions/format/toPercentString'
 import { toTokenAmount } from '@/functions/format/toTokenAmount'
 import toUsdVolume from '@/functions/format/toUsdVolume'
 import { isMintEqual } from '@/functions/judgers/areEqual'
-import { eq, lte, gte, isMeaningfulNumber } from '@/functions/numberish/compare'
+import {
+  eq,
+  gte,
+  isMeaningfulNumber,
+  lte
+} from '@/functions/numberish/compare'
 import { formatDecimal } from '@/functions/numberish/formatDecimal'
 import { getFirstNonZeroDecimal } from '@/functions/numberish/handleZero'
-import { div, mul, sub } from '@/functions/numberish/operations'
+import {
+  mul,
+  sub
+} from '@/functions/numberish/operations'
 import toBN from '@/functions/numberish/toBN'
 import toFraction from '@/functions/numberish/toFraction'
 import { toString } from '@/functions/numberish/toString'
@@ -49,20 +74,22 @@ import usePrevious from '@/hooks/usePrevious'
 import { useRecordedEffect } from '@/hooks/useRecordedEffect'
 import { useSwapTwoElements } from '@/hooks/useSwapTwoElements'
 import useToggle from '@/hooks/useToggle'
-import { PairInfoTitle, RemainSOLAlert, toXYChartFormat } from '@/pageComponents/Concentrated'
+import { useToken2022FeeTooHighWarningChecker } from '@/hooks/useToken2022FeeTooHighWarningChecker'
+import {
+  PairInfoTitle,
+  RemainSOLAlert,
+  toXYChartFormat
+} from '@/pageComponents/Concentrated'
 import { AprChart } from '@/pageComponents/Concentrated/AprChart'
 import { ConcentratedModifyTooltipIcon } from '@/pageComponents/Concentrated/ConcentratedModifyTooltipIcon'
 import { ConcentratedTimeBasisSwitcher } from '@/pageComponents/Concentrated/ConcentratedTimeBasisSwitcher'
 import InputLocked from '@/pageComponents/Concentrated/InputLocked'
 import { useConcentratedTickAprCalc } from '@/pageComponents/Concentrated/useConcentratedAprCalc'
+import {
+  Fraction,
+  ZERO
+} from '@raydium-io/raydium-sdk'
 
-import { getTransferFeeInfo } from '@/application/token/getTransferFeeInfos'
-import { isToken2022 } from '@/application/token/isToken2022'
-import { AsyncAwait } from '@/components/AsyncAwait'
-import { Token2022Badge } from '@/components/Badge'
-import CoinAvatar from '@/components/CoinAvatar'
-import Tooltip from '@/components/Tooltip'
-import { useToken2022FeeTooHighWarningChecker } from '@/hooks/useToken2022FeeTooHighWarningChecker'
 import AddLiquidityConfirmDialog from '../../pageComponents/Concentrated/AddLiquidityConfirmDialog'
 import Chart from '../../pageComponents/ConcentratedRangeChart/Chart'
 import { Range } from '../../pageComponents/ConcentratedRangeChart/chartUtil'

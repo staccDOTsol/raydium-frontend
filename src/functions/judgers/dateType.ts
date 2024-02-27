@@ -119,7 +119,12 @@ export function isStringNumber(val: any): val is StringNumber {
 //#endregion
 
 export function isToken(val: any): val is Token {
-  return val instanceof Token
+  try {
+    return val instanceof Token
+  }
+  catch {
+    return false
+  }
 }
 
 export function isTokenAmount(val: any): val is TokenAmount {

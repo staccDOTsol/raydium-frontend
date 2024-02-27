@@ -1,11 +1,3 @@
-import {
-  Clmm,
-  ApiClmmPositionLinePoint,
-  InnerSimpleTransaction,
-  ReturnTypeFetchMultiplePoolInfos
-} from '@raydium-io/raydium-sdk'
-import { PublicKey } from '@solana/web3.js'
-
 import BN from 'bn.js'
 import { create } from 'zustand'
 
@@ -14,13 +6,22 @@ import useToken from '@/application/token/useToken'
 import { shakeUndifindedItem } from '@/functions/arrayMethods'
 import jFetch from '@/functions/dom/jFetch'
 import useLocalStorageItem from '@/hooks/useLocalStorage'
-import { SortMode, SortModeArr } from '@/hooks/useSort'
+import {
+  SortMode,
+  SortModeArr
+} from '@/hooks/useSort'
 import { Numberish } from '@/types/constants'
 import { MayArray } from '@/types/generics'
+import {
+  ApiClmmPositionLinePoint,
+  Clmm,
+  InnerSimpleTransaction,
+  ReturnTypeFetchMultiplePoolInfos
+} from '@raydium-io/raydium-sdk'
+import { PublicKey } from '@solana/web3.js'
 
 import useAppAdvancedSettings from '../common/useAppAdvancedSettings'
 import { SplToken } from '../token/type'
-
 import {
   APIConcentratedInfo,
   HydratedClmmConfigInfo,
@@ -70,7 +71,7 @@ export type ConcentratedStore = {
   loadChartPointsAct: (poolId: string, options?: { force?: boolean }) => void
   liquidity?: BN // from SDK, just store in UI
   liquidityMin?: BN // from SDK, just store in UI
-
+direction? : number
   coin1?: SplToken
   coin1Amount?: Numberish // for coin may be not selected yet, so it can't be TokenAmount
   coin1AmountFee?: Numberish
@@ -180,7 +181,6 @@ export const useConcentrated = create<ConcentratedStore>((set, get) => ({
   isMigrateToClmmDialogOpen: false,
   isAprCalcPanelShown: false,
   ownedPoolOnly: false,
-
   isInput: undefined,
   isSearchAmmDialogOpen: false,
   removeAmount: '',

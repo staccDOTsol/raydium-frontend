@@ -4,23 +4,16 @@ import { useRouter } from 'next/router'
 import { WalletAdapterNetwork, WalletError, Adapter } from '@solana/wallet-adapter-base'
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
 import {
-  BackpackWalletAdapter,
   BitKeepWalletAdapter,
   BitpieWalletAdapter,
-  BraveWalletAdapter,
   CloverWalletAdapter,
   Coin98WalletAdapter,
   CoinbaseWalletAdapter,
   CoinhubWalletAdapter,
-  ExodusWalletAdapter,
-  GlowWalletAdapter,
   LedgerWalletAdapter,
   MathWalletAdapter,
   PhantomWalletAdapter,
   SafePalWalletAdapter,
-  SlopeWalletAdapter,
-  SolletExtensionWalletAdapter,
-  SolletWalletAdapter,
   SolongWalletAdapter,
   TokenPocketWalletAdapter,
   TorusWalletAdapter,
@@ -51,24 +44,18 @@ export function SolanaWalletProviders({ children }: { children?: ReactNode }) {
       new OKXWalletAdapter(),
       new TrustWalletAdapter(),
       ...(typeof window === 'undefined' ? [] : [new SolflareWalletAdapter()]),
-      new SolletWalletAdapter(),
       new TorusWalletAdapter(),
       new LedgerWalletAdapter(),
-      new SolletExtensionWalletAdapter(),
       new MathWalletAdapter({ endpoint }),
       new TokenPocketWalletAdapter(),
       new CoinbaseWalletAdapter({ endpoint }),
       new SolongWalletAdapter({ endpoint }),
       new Coin98WalletAdapter({ endpoint }),
       new SafePalWalletAdapter({ endpoint }),
-      new SlopeWalletAdapter({ endpoint }),
       new BitpieWalletAdapter({ endpoint }),
-      new GlowWalletAdapter(),
       new BitKeepWalletAdapter({ endpoint }),
-      new ExodusWalletAdapter({ endpoint }),
       new CloverWalletAdapter(),
       new CoinhubWalletAdapter(),
-      new BackpackWalletAdapter(),
       new WalletConnectWalletAdapter({
         network: WalletAdapterNetwork.Mainnet, // const only, cannot use condition to use dev/main, guess is relative to walletconnect connection init
         options: {
@@ -81,7 +68,6 @@ export function SolanaWalletProviders({ children }: { children?: ReactNode }) {
           }
         }
       }),
-      new BraveWalletAdapter(),
       ...(detectEmbeddedInSquadsIframe() ? [new SquadsEmbeddedWalletAdapter()] : [])
     ],
     [endpoint]

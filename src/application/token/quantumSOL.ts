@@ -16,7 +16,7 @@ import { HydratedTokenJsonInfo, SplToken } from './type'
 
 export const WSOLMint = new PublicKey('So11111111111111111111111111111111111111112')
 export const SOLDecimals = 9
-export const WSOL = new Token(TOKEN_PROGRAM_ID, WSOLMint, SOLDecimals, 'WSOL', 'wrapped solana')
+export const WSOL = new Token(TOKEN_PROGRAM_ID, "So11111111111111111111111111111111111111112", SOLDecimals, 'WSOL', 'wrapped solana')
 export const SOL = new Currency(SOLDecimals, 'SOL', 'solana')
 export const SOL_BASE_BALANCE = '0.05'
 
@@ -135,8 +135,14 @@ export const toQuantumSolAmount = ({
       : !wsolRawAmount && solRawAmount
       ? QuantumSOLVersionSOL
       : QuantumSOL
-  const tempTokenAmount = new TokenAmount(quantumSol, solRawAmount ?? wsolRawAmount ?? ZERO)
-  // @ts-expect-error force
+  let tempTokenAmount;
+  try {
+  tempTokenAmount = new TokenAmount(quantumSol, solRawAmount ?? wsolRawAmount ?? ZERO)
+  }
+  catch {
+    tempTokenAmount = new TokenAmount(quantumSol, ZERO)
+  }
+
   return Object.assign(tempTokenAmount, { solBalance: solRawAmount, wsolBalance: wsolRawAmount })
 }
 

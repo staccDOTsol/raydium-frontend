@@ -1,26 +1,40 @@
+import {
+  useCallback,
+  useEffect,
+  useState
+} from 'react'
+
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useState } from 'react'
-import { ApiPoolInfoItem } from '@raydium-io/raydium-sdk'
 import { ParsedUrlQuery } from 'querystring'
 
+import { getAddLiquidityDefaultPool } from '@/application/ammV3PoolInfoAndLiquidity/ammAndLiquidity'
 import useAppSettings from '@/application/common/useAppSettings'
 import useLiquidity from '@/application/liquidity/useLiquidity'
 import useNotification from '@/application/notification/useNotification'
 import { useSwap } from '@/application/swap/useSwap'
 import useToken from '@/application/token/useToken'
 import { hasSameItems } from '@/functions/arrayMethods'
-import { throttle } from '@/functions/debounce'
 import toPubString from '@/functions/format/toMintString'
-import { areShallowEqual, isStringInsensitivelyEqual } from '@/functions/judgers/areEqual'
+import {
+  areShallowEqual,
+  isStringInsensitivelyEqual
+} from '@/functions/judgers/areEqual'
 import { toString } from '@/functions/numberish/toString'
-import { objectShakeFalsy, omit } from '@/functions/objectMethods'
+import {
+  objectShakeFalsy,
+  omit
+} from '@/functions/objectMethods'
 import useAsyncEffect from '@/hooks/useAsyncEffect'
 import { EnumStr } from '@/types/constants'
+import { ApiPoolInfoItem } from '@raydium-io/raydium-sdk'
 
-import { getAddLiquidityDefaultPool } from '@/application/ammV3PoolInfoAndLiquidity/ammAndLiquidity'
 import useConnection from '../connection/useConnection'
 import { getUserTokenEvenNotExist } from '../token/getUserTokenEvenNotExist'
-import { QuantumSOLVersionSOL, QuantumSOLVersionWSOL, WSOLMint } from '../token/quantumSOL'
+import {
+  QuantumSOLVersionSOL,
+  QuantumSOLVersionWSOL,
+  WSOLMint
+} from '../token/quantumSOL'
 import useUpdateUrlFn from '../txTools/useUpdateUrlFn'
 
 function isSolAndWsol(query1: string, query2: string): boolean {
@@ -108,7 +122,7 @@ export default function useSwapUrlParser(): void {
           mint1: urlCoin1Mint,
           mint2: urlCoin2Mint
         })
-
+console.log('matchedLiquidityJsonInfo', matchedLiquidityJsonInfo)
       if (matchedLiquidityJsonInfo) {
         const coin1 = getToken(matchedLiquidityJsonInfo?.baseMint) ?? urlCoin1
         const coin2 = getToken(matchedLiquidityJsonInfo?.quoteMint) ?? urlCoin2
@@ -137,6 +151,8 @@ export default function useSwapUrlParser(): void {
     // parse amount
     const coin1Amount = urlCoin1Mint ? urlCoin1Amount : urlCoin2Mint ? urlCoin2Amount : undefined
     const coin2Amount = urlCoin2Mint ? urlCoin2Amount : urlCoin1Mint ? urlCoin1Amount : undefined
+    console.log('coin1Amount', coin1Amount)
+    console.log('coin2Amount', coin2Amount)
     if (coin1Amount) useSwap.setState({ coin1Amount: coin1Amount })
     if (coin2Amount) useSwap.setState({ coin2Amount: coin2Amount })
 

@@ -46,7 +46,7 @@ function CreateFeeSwitcherContent({
     <Row className={twMerge('gap-2 grid grid-cols-3 item-grow items-stretch', className)}>
       {configs?.map((config) => {
         const isCurrent = config.id === current?.id
-        const isAlreadyCreated = existIds?.includes(config.id)
+        const isAlreadyCreated = false//existIds?.includes(config.id)
         const canSelect = coin1 && coin2 && !isAlreadyCreated
         return (
           <Tooltip className="grow" key={config.id} disable={!isAlreadyCreated}>

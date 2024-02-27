@@ -1,22 +1,29 @@
+import {
+  useEffect,
+  useRef
+} from 'react'
+
 import assert from '@/functions/assert'
 import { isMeaningfulNumber } from '@/functions/numberish/compare'
 import { div } from '@/functions/numberish/operations'
 import toBN from '@/functions/numberish/toBN'
 import toFraction from '@/functions/numberish/toFraction'
 import { toString } from '@/functions/numberish/toString'
-import { Clmm, ClmmConfigInfo } from '@raydium-io/raydium-sdk'
+import {
+  Clmm,
+  ClmmConfigInfo
+} from '@raydium-io/raydium-sdk'
 import { PublicKey } from '@solana/web3.js'
-import { useEffect, useRef } from 'react'
+
 import useAppAdvancedSettings from '../common/useAppAdvancedSettings'
 import useConnection from '../connection/useConnection'
 import { getTokenProgramId } from '../token/isToken2022'
 import { fractionToDecimal } from '../txTools/decimal2Fraction'
 import { getComputeBudgetConfig } from '../txTools/getComputeBudgetConfig'
-import { jsonInfo2PoolKeys } from '../txTools/jsonInfo2PoolKeys'
+import { lookupTableCache } from '../txTools/handleTx'
 import useWallet from '../wallet/useWallet'
 import hydrateConcentratedInfo from './hydrateConcentratedInfo'
 import useConcentrated from './useConcentrated'
-import { lookupTableCache } from '../txTools/handleTx'
 
 export function useAutoCreateClmmPool() {
   const { coin1, coin2, userSelectedAmmConfigFeeOption, userSettedCurrentPrice, ammPoolStartTime } = useConcentrated()
@@ -87,7 +94,16 @@ async function createNewConcentratedPool({ timestamp: number }) {
     programId: programIds.CLMM,
     mint1: { programId: mint1TokenProgramId, mint: coin1.mint, decimals: coin1.decimals },
     mint2: { programId: mint2TokenProgramId, mint: coin2.mint, decimals: coin2.decimals },
-    ammConfig: jsonInfo2PoolKeys(userSelectedAmmConfigFeeOption.original) as unknown as ClmmConfigInfo,
+    ammConfig: {
+      id: new PublicKey("F7JaRQaKZt25nBCqpXQvVwwUWKofrXqJiuRb1nCSiAGW"),
+      index: 0,
+      protocolFeeRate: 30,
+      tradeFeeRate: 30,
+      tickSpacing: 64,
+      fundFeeRate: 30,
+      fundOwner: "7ihN8QaTfNoDTRTQGULCzbUT3PHwPDTu5Brcu4iT2paP",
+      description: "hehe"
+    } as ClmmConfigInfo,
     initialPrice: fractionToDecimal(currentPrice, 15),
     owner: owner ?? PublicKey.default,
     payer: owner ?? PublicKey.default,
@@ -97,7 +113,16 @@ async function createNewConcentratedPool({ timestamp: number }) {
     makeTxVersion: txVersion
   })
   const mockedPoolInfo = Clmm.makeMockPoolInfo({
-    ammConfig: jsonInfo2PoolKeys(userSelectedAmmConfigFeeOption.original) as unknown as ClmmConfigInfo,
+    ammConfig: {
+      id: new PublicKey("F7JaRQaKZt25nBCqpXQvVwwUWKofrXqJiuRb1nCSiAGW"),
+      index: 0,
+      protocolFeeRate: 30,
+      tradeFeeRate: 30,
+      tickSpacing: 64,
+      fundFeeRate: 30,
+      fundOwner: "7ihN8QaTfNoDTRTQGULCzbUT3PHwPDTu5Brcu4iT2paP",
+      description: "hehe"
+    } as ClmmConfigInfo,
     mint1: { programId: mint1TokenProgramId, mint: coin1.mint, decimals: coin1.decimals },
     mint2: { programId: mint2TokenProgramId, mint: coin2.mint, decimals: coin2.decimals },
     owner: owner ?? PublicKey.default,

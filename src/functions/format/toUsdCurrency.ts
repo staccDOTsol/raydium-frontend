@@ -9,5 +9,5 @@ import { usdCurrency } from './toTokenPrice'
 
 export default function toUsdCurrency(amount: Numberish) {
   const amountBigNumber = toBN(mul(amount, 10 ** usdCurrency.decimals))
-  return new CurrencyAmount(usdCurrency, amountBigNumber)
+  return new CurrencyAmount(usdCurrency, amountBigNumber.toString())
 }

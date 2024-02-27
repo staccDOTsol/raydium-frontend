@@ -1,16 +1,25 @@
-import { Clmm, Fraction } from '@raydium-io/raydium-sdk'
+import { BN } from 'bn.js'
 
 import {
-  decimalToFraction, fractionToDecimal, recursivelyDecimalToFraction
+  decimalToFraction,
+  fractionToDecimal,
+  recursivelyDecimalToFraction
 } from '@/application/txTools/decimal2Fraction'
 import { isMintEqual } from '@/functions/judgers/areEqual'
-import { div, getMax, mul } from '@/functions/numberish/operations'
+import {
+  div,
+  getMax,
+  mul
+} from '@/functions/numberish/operations'
 import toFraction from '@/functions/numberish/toFraction'
 import { Range } from '@/pageComponents/ConcentratedRangeChart/chartUtil'
 import { Numberish } from '@/types/constants'
+import {
+  Clmm,
+  Fraction
+} from '@raydium-io/raydium-sdk'
 
 import { SplToken } from '../token/type'
-
 import { HydratedConcentratedInfo } from './type'
 
 export function getPriceAndTick(info: Parameters<typeof Clmm['getPriceAndTick']>[0]) {
@@ -20,7 +29,9 @@ export function getPriceAndTick(info: Parameters<typeof Clmm['getPriceAndTick']>
 
 export function getTickPrice(info: Parameters<typeof Clmm['getTickPrice']>[0]) {
   const result = Clmm.getTickPrice(info)
-  return recursivelyDecimalToFraction(result)
+  const tickSqrtPriceX64 = result.tickSqrtPriceX64
+  const sqrtPrice = tickSqrtPriceX64.div(new BN(2).pow(new BN(64)))
+  return { price: new Fraction(sqrtPrice), tick: result.tick }
 }
 
 interface GetChartDataProps {

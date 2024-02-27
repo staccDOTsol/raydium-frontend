@@ -1,5 +1,3 @@
-import { Clmm } from '@raydium-io/raydium-sdk'
-
 import txHandler, { lookupTableCache } from '@/application/txTools/handleTx'
 import useWallet from '@/application/wallet/useWallet'
 import assert from '@/functions/assert'
@@ -7,6 +5,7 @@ import { toTokenAmount } from '@/functions/format/toTokenAmount'
 import toBN from '@/functions/numberish/toBN'
 import { toString } from '@/functions/numberish/toString'
 
+import { Clmm } from '../../../../raydium-sdk'
 import useConnection from '../connection/useConnection'
 import useNotification from '../notification/useNotification'
 import { isToken2022 } from '../token/isToken2022'
@@ -14,7 +13,6 @@ import { openToken2022ClmmAmountConfirmPanel } from '../token/openToken2022ClmmP
 import { isQuantumSOLVersionSOL } from '../token/quantumSOL'
 import { getComputeBudgetConfig } from '../txTools/getComputeBudgetConfig'
 import { getEphemeralSigners } from '../txTools/getEphemeralSigners'
-
 import useConcentrated, { ConcentratedStore } from './useConcentrated'
 
 export default async function txCreateConcentratedPosotion({
@@ -29,6 +27,7 @@ export default async function txCreateConcentratedPosotion({
   priceUpper = useConcentrated.getState().priceUpper,
   priceLowerTick = useConcentrated.getState().priceLowerTick,
   priceUpperTick = useConcentrated.getState().priceUpperTick,
+  direction = useConcentrated.getState().direction,
   liquidity = useConcentrated.getState().liquidity,
   onSuccess
 }: {
@@ -47,9 +46,10 @@ export default async function txCreateConcentratedPosotion({
   | 'priceLowerTick'
   | 'priceUpperTick'
   | 'currentAmmPool'
+  | 'direction'
 > = {}) {
-  const coin1TokenAmount = toTokenAmount(coin1, coin1Amount, { alreadyDecimaled: true })
-  const coin2TokenAmount = toTokenAmount(coin2, coin2Amount, { alreadyDecimaled: true })
+  const coin1TokenAmount = toTokenAmount(coin1, coin1Amount?.toString(), { alreadyDecimaled: true })
+  const coin2TokenAmount = toTokenAmount(coin2, coin2Amount?.toString(), { alreadyDecimaled: true })
   // check token 2022
   const needConfirm = [coin1, coin2].some((i) => isToken2022(i))
   let userHasConfirmed: boolean
@@ -89,7 +89,8 @@ export default async function txCreateConcentratedPosotion({
       priceLower,
       priceUpper,
       priceLowerTick,
-      priceUpperTick
+      priceUpperTick,
+      direction
     }
     const { innerTransactions, nftAddress } = await generateCreateClmmPositionTx(params)
 
@@ -122,6 +123,7 @@ export type GenerateCreateClmmPositionTxFnParams = Pick<
   | 'priceUpperTick'
   | 'currentAmmPool'
   | 'liquidityMin'
+  | 'direction'
 >
 
 export async function generateCreateClmmPositionTx(
@@ -138,7 +140,8 @@ export async function generateCreateClmmPositionTx(
     liquidityMin = useConcentrated.getState().liquidityMin,
     priceLowerTick = useConcentrated.getState().priceLowerTick,
     priceUpperTick = useConcentrated.getState().priceUpperTick,
-    currentAmmPool = useConcentrated.getState().currentAmmPool
+    currentAmmPool = useConcentrated.getState().currentAmmPool,
+    direction = useConcentrated.getState().direction
   }: GenerateCreateClmmPositionTxFnParams = useConcentrated.getState()
 ) {
   const { tokenAccountRawInfos, txVersion } = useWallet.getState()
@@ -161,9 +164,14 @@ export async function generateCreateClmmPositionTx(
   const isSol = isQuantumSOLVersionSOL(coin1) || isQuantumSOLVersionSOL(coin2)
 
   const coin1IsMintA = currentAmmPool.state.mintA.mint.equals(coin1.mint)
-
-  const _coin1Amount = toBN(coin1SlippageAmount, coin1.decimals, 'up')
-  const _coin2Amount = toBN(coin2SlippageAmount, coin2.decimals, 'up')
+// @ts-ignore
+  const _coin1Amount = toBN(coin1Amount.toString(), coin1.decimals.toString(), 'up')
+  // @ts-ignore
+  const _coin2Amount = toBN(coin2Amount.toString(), coin2.decimals.toString(), 'up')
+  console.log('coin1Amount', _coin1Amount.toString())
+  console.log('coin2Amount', _coin2Amount.toString())
+  console.log('coin1Amount', _coin1Amount.toString())
+  console.log('coin2Amount', _coin2Amount.toString())
 
   const { innerTransactions, address } = await Clmm.makeOpenPositionFromLiquidityInstructionSimple({
     connection: connection,
@@ -183,6 +191,8 @@ export async function generateCreateClmmPositionTx(
     checkCreateATAOwner: true,
     makeTxVersion: txVersion,
     lookupTableCache,
+    // @ts-ignore
+    direction,
     getEphemeralSigners: await getEphemeralSigners()
   })
   return { innerTransactions, nftAddress: String(address.nftMint) }

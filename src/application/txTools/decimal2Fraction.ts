@@ -1,11 +1,22 @@
-import { PublicKey } from '@solana/web3.js'
-
 import BN from 'bn.js'
 import Decimal from 'decimal.js'
-import { _100, Currency, CurrencyAmount, Fraction, Percent, Price, Token, TokenAmount } from '@raydium-io/raydium-sdk'
 
-import { isDecimal, isFraction } from '@/functions/judgers/dateType'
+import {
+  isDecimal,
+  isFraction
+} from '@/functions/judgers/dateType'
 import parseNumberInfo from '@/functions/numberish/parseNumberInfo'
+import {
+  _100,
+  Currency,
+  CurrencyAmount,
+  Fraction,
+  Percent,
+  Price,
+  Token,
+  TokenAmount
+} from '@raydium-io/raydium-sdk'
+import { PublicKey } from '@solana/web3.js'
 
 export function decimalToFraction(n: undefined): undefined
 export function decimalToFraction(n: Decimal): Fraction
@@ -69,6 +80,7 @@ function notInnerObject(v: unknown): v is Record<string, any> {
 }
 
 export function recursivelyDecimalToFraction<T>(info: T): ReplaceType<T, Decimal, Fraction> {
+  console.log(info)
   // @ts-expect-error no need type for inner code
   return isDecimal(info)
     ? decimalToFraction(info)

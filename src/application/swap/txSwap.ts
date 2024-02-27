@@ -1,18 +1,28 @@
-import { forecastTransactionSize, InnerSimpleTransaction, InstructionType, TradeV2 } from '@raydium-io/raydium-sdk'
-import { ComputeBudgetProgram, SignatureResult, TransactionInstruction } from '@solana/web3.js'
-
 import assert from '@/functions/assert'
 import { toTokenAmount } from '@/functions/format/toTokenAmount'
 import { isMintEqual } from '@/functions/judgers/areEqual'
 import { gt } from '@/functions/numberish/compare'
 import { toString } from '@/functions/numberish/toString'
+import {
+  forecastTransactionSize,
+  InnerSimpleTransaction,
+  InstructionType,
+  TradeV2
+} from '@raydium-io/raydium-sdk'
+import {
+  ComputeBudgetProgram,
+  SignatureResult,
+  TransactionInstruction
+} from '@solana/web3.js'
 
 import useAppAdvancedSettings from '../common/useAppAdvancedSettings'
 import { TxHistoryInfo } from '../txHistory/useTxHistory'
 import { getComputeBudgetConfig } from '../txTools/getComputeBudgetConfig'
-import txHandler, { lookupTableCache, TransactionQueue } from '../txTools/handleTx'
+import txHandler, {
+  lookupTableCache,
+  TransactionQueue
+} from '../txTools/handleTx'
 import useWallet from '../wallet/useWallet'
-
 import { useSwap } from './useSwap'
 
 export default async function txSwap() {
@@ -31,14 +41,13 @@ export default async function txSwap() {
     minReceived,
     maxSpent
   } = useSwap.getState()
-
   const upCoin = directionReversed ? coin2 : coin1
   // although info is included in routes, still need upCoinAmount to pop friendly feedback
   const upCoinAmount = (directionReversed ? coin2Amount : coin1Amount) || '0'
 
   const downCoin = directionReversed ? coin1 : coin2
   // although info is included in routes, still need downCoinAmount to pop friendly feedback
-  const downCoinAmount = (directionReversed ? coin1Amount : coin2Amount) || '0'
+  const downCoinAmount = (directionReversed ? coin1Amount : coin2Amount) || upCoinAmount
 
   assert(upCoinAmount && gt(upCoinAmount, 0), 'should input upCoin amount larger than 0')
   assert(downCoinAmount && gt(downCoinAmount, 0), 'should input downCoin amount larger than 0')

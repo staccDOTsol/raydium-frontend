@@ -78,17 +78,18 @@ export function toTokenAmount(
   const programId = getTokenProgramId(token)
   const parsedToken = isToken(token)
     ? token
-    : new Token(programId, token.mint, token.decimals, token.symbol, token.name)
+    : new Token(programId.toBase58(), token.mint.toString(), token.decimals, token.symbol, token.name)
 
   const numberDetails = parseNumberInfo(amount)
 
-  const amountBigNumber = toBN(
+  let  amountBigNumber  = toBN((
     options?.alreadyDecimaled
-      ? new Fraction(numberDetails.numerator, numberDetails.denominator).mul(new BN(10).pow(toBN(parsedToken.decimals)))
-      : amount
+      ? new Fraction(numberDetails.numerator, numberDetails.denominator).mul(new BN(10).pow(toBN(parsedToken.decimals)).toString())
+      : amount?.toString()
       ? toFraction(amount)
-      : toFraction(0)
+      : toFraction(0))
   )
+  
 
   const iswsol =
     (isQuantumSOL(parsedToken) && parsedToken.collapseTo === 'wsol') ||
@@ -101,6 +102,6 @@ export function toTokenAmount(
   } else if (issol && !options?.exact) {
     return toQuantumSolAmount({ solRawAmount: amountBigNumber })
   } else {
-    return new TokenAmount(parsedToken, amountBigNumber)
+    return new TokenAmount(parsedToken, amountBigNumber == undefined ? "0" : amountBigNumber.toString())
   }
 }

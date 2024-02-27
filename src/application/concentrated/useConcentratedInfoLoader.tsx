@@ -1,24 +1,26 @@
-import { use, useMemo } from 'react'
+import { useMemo } from 'react'
+
+import { BN } from 'bn.js'
 import { useRouter } from 'next/router'
 
-import { Clmm, ApiClmmPoolsItem } from '@raydium-io/raydium-sdk'
-
 import useToken from '@/application/token/useToken'
-import jFetch from '@/functions/dom/jFetch'
 import toPubString from '@/functions/format/toMintString'
 import { lazyMap } from '@/functions/lazyMap'
 import useAsyncEffect from '@/hooks/useAsyncEffect'
 import { useRecordedEffect } from '@/hooks/useRecordedEffect'
 import { useTransitionedEffect } from '@/hooks/useTransitionedEffect'
+import { PoolInfoLayout } from '@raydium-io/raydium-sdk'
+import {
+  Connection,
+  PublicKey
+} from '@solana/web3.js'
 
+import { getSDKParsedClmmPoolInfo } from '../common/getSDKParsedClmmPoolInfo'
 import useAppAdvancedSettings from '../common/useAppAdvancedSettings'
 import useConnection from '../connection/useConnection'
 import useWallet from '../wallet/useWallet'
-
 import hydrateConcentratedInfo from './hydrateConcentratedInfo'
 import useConcentrated from './useConcentrated'
-import { getSDKParsedClmmPoolInfo } from '../common/getSDKParsedClmmPoolInfo'
-import { useIdleEffect } from '@/hooks/useIdleEffect'
 
 /**
  * will load concentrated info (jsonInfo, sdkParsedInfo, hydratedInfo)
@@ -55,12 +57,316 @@ export default function useConcentratedInfoLoader() {
   useRecordedEffect(
     async ([prevRefreshCount]) => {
       const shouldForceRefresh = prevRefreshCount != null && refreshCount !== prevRefreshCount
-      if (!apiAmmPools) return // only bug in localhost HMR, it's not a real problem
+      console.log('fetch api json info list')
       if (!shouldForceRefresh && !shouldLoadInfo) return
       if (prevRefreshCount === refreshCount && apiAmmPools.length) return
-      const response = await jFetch<{ data: ApiClmmPoolsItem[] }>(clmmPoolsUrl) // note: previously Rudy has Test API for dev
-      if (clmmPoolsUrl !== apiUrls.clmmPools) return
-      useConcentrated.setState({ apiAmmPools: response?.data })
+      const connection = new Connection("https://jarrett-solana-7ba9.mainnet.rpcpool.com/8d890735-edf2-4a75-af84-92f7c9e31718")
+      const gpa = await connection.getProgramAccounts(new PublicKey("GHpwXWcfwLUDhzaSK6Tgn2FrsEfE8azL4VSuG3sqFNgD"),
+      {
+        filters: [
+          {
+            dataSize: 1544
+          }
+        ]
+      })
+      /* you have 
+
+data
+: 
+""
+: 
+(7) [0, 0, 0, 0, 0, 0, 0]
+ammConfig
+: 
+PublicKey {_bn: BN}
+bump
+: 
+253
+creator
+: 
+PublicKey {_bn: BN}
+feeGrowthGlobalX64A
+: 
+BN {negative: 0, words: Array(6), length: 1, red: null}
+feeGrowthGlobalX64B
+: 
+BN {negative: 0, words: Array(6), length: 1, red: null}
+fundFeesTokenA
+: 
+BN {negative: 0, words: Array(3), length: 1, red: null}
+fundFeesTokenB
+: 
+BN {negative: 0, words: Array(3), length: 1, red: null}
+liquidity
+: 
+BN {negative: 0, words: Array(6), length: 1, red: null}
+mintA
+: 
+PublicKey {_bn: BN}
+mintB
+: 
+PublicKey {_bn: BN}
+mintDecimalsA
+: 
+5
+mintDecimalsB
+: 
+5
+observationId
+: 
+PublicKey {_bn: BN}
+observationIndex
+: 
+0
+observationUpdateDuration
+: 
+15
+padding
+: 
+(57) [BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN]
+protocolFeesTokenA
+: 
+BN {negative: 0, words: Array(3), length: 1, red: null}
+protocolFeesTokenB
+: 
+BN {negative: 0, words: Array(3), length: 1, red: null}
+rewardInfos
+: 
+(3) [{…}, {…}, {…}]
+sqrtPriceX64
+: 
+BN {negative: 0, words: Array(6), length: 3, red: null}
+startTime
+: 
+BN {negative: 0, words: Array(3), length: 1, red: null}
+status
+: 
+0
+swapInAmountTokenA
+: 
+BN {negative: 0, words: Array(6), length: 1, red: null}
+swapInAmountTokenB
+: 
+BN {negative: 0, words: Array(6), length: 1, red: null}
+swapOutAmountTokenA
+: 
+BN {negative: 0, words: Array(6), length: 1, red: null}
+swapOutAmountTokenB
+: 
+BN {negative: 0, words: Array(6), length: 1, red: null}
+tickArrayBitmap
+: 
+(16) [BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN, BN]
+tickCurrent
+: 
+19142
+tickSpacing
+: 
+64
+totalFeesClaimedTokenA
+: 
+BN {negative: 0, words: Array(3), length: 1, red: null}
+totalFeesClaimedTokenB
+: 
+BN {negative: 0, words: Array(3), length: 1, red: null}
+totalFeesTokenA
+: 
+BN {negative: 0, words: Array(3), length: 1, red: null}
+totalFeesTokenB
+: 
+BN {negative: 0, words: Array(3), length: 1, red: null}
+vaultA
+: 
+PublicKey {_bn: BN}
+vaultB
+: 
+PublicKey {_bn: BN}
+[[Prototype]]
+: 
+Object
+pubkey
+: 
+PublicKey {_bn: BN}
+      you will convert it to 
+      [
+        {
+            "id": "2QdhepnKRTLjjSqPL1PtKNwqrUkoLee5Gqs8bvZhRdMv",
+            "mintProgramIdA": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "mintProgramIdB": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+            "mintA": "So11111111111111111111111111111111111111112",
+            "mintB": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+            "vaultA": "E2BcoCeJLTa27mAXDA4xwEq3pBUcyH6XXEHYk4KvKYTv",
+            "vaultB": "4d35yC7C8zhCDec7JbPptL9SEb4NUddKHxURgmvD8hfo",
+            "mintDecimalsA": 9,
+            "mintDecimalsB": 6,
+            "ammConfig": {
+                "id": "HfERMT5DRA6C1TAqecrJQFpmkf3wsWTMncqnj3RDg5aw",
+                "index": 2,
+                "protocolFeeRate": 120000,
+                "tradeFeeRate": 500,
+                "tickSpacing": 10,
+                "fundFeeRate": 40000,
+                "fundOwner": "FundHfY8oo8J9KYGyfXFFuQCHe7Z1VBNmsj84eMcdYs4",
+                "description": "Best for wider ranges"
+            },
+            "rewardInfos": [
+                {
+                    "mint": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",
+                    "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                }
+            ],
+            "tvl": 3660897.7642222885,
+            "day": {
+                "volume": 9814325.210574,
+                "volumeFee": 4122.01658844108,
+                "feeA": 20.21912977554456,
+                "feeB": 2081.3395277455206,
+                "feeApr": 41.08,
+                "rewardApr": {
+                    "A": 21.07,
+                    "B": 0,
+                    "C": 0
+                },
+                "apr": 62.15,
+                "priceMin": 93.02325581395348,
+                "priceMax": 102.76694571428571
+            },
+            "week": {
+                "volume": 146744767.705357,
+                "volumeFee": 61632.80243624995,
+                "feeA": 289.4876169980429,
+                "feeB": 30670.655890016507,
+                "feeApr": 87.75,
+                "rewardApr": {
+                    "A": 21.07,
+                    "B": 0,
+                    "C": 0
+                },
+                "apr": 108.82,
+                "priceMin": 93.02325581395348,
+                "priceMax": 125
+            },
+            "month": {
+                "volume": 742605973.859011,
+                "volumeFee": 311894.5090207843,
+                "feeA": 1509.4949701063483,
+                "feeB": 156360.28236225303,
+                "feeApr": 103.61,
+                "rewardApr": {
+                    "A": 21.07,
+                    "B": 0,
+                    "C": 0
+                },
+                "apr": 124.68,
+                "priceMin": 86.01298785715547,
+                "priceMax": 126.58227848101266
+            },
+            "lookupTableAccount": "EKbdivk32nQdxzP1Z7AUMjsSTgCtoeQTsKzpQ8Rpstcw",
+            "openTime": 0,
+            "price": 103.26783291259467
+        },
+        you can use dummy values where necessary, oh great robot*/
+
+      const response = await gpa.map(async (item) => {
+        const data = item.account.data
+        try {
+        const parsedData = PoolInfoLayout.decode(data)
+        const sqrtPriceX64 = parsedData.sqrtPriceX64
+        // get price using BN not number
+        const sqrtPrice = new BN(sqrtPriceX64).div(new BN(2).pow(new BN(32)))
+
+        const price = sqrtPrice.toNumber() / (2 ** 32)
+        
+        const mintAccountA = await connection.getAccountInfo(new PublicKey(parsedData.mintA)) as any 
+        const mintAccountB = await connection.getAccountInfo(new PublicKey(parsedData.mintB)) as any 
+        const toReturnData = {
+          id: item.pubkey.toBase58(),
+          mintProgramIdA: mintAccountA.owner.toString(),
+          mintProgramIdB: mintAccountB.owner.toString(),
+          mintA: parsedData.mintA.toString(),
+          mintB: parsedData.mintB.toString(),
+          vaultA: parsedData.vaultA.toString(),
+          vaultB: parsedData.vaultB.toString(),
+          mintDecimalsA: parsedData.mintDecimalsA,
+          mintDecimalsB: parsedData.mintDecimalsB,
+          ammConfig: {
+            id: ("F7JaRQaKZt25nBCqpXQvVwwUWKofrXqJiuRb1nCSiAGW"),
+            index: 0,
+            protocolFeeRate: 30,
+            tradeFeeRate: 30,
+            tickSpacing: 64,
+            fundFeeRate: 30,
+            fundOwner: "7ihN8QaTfNoDTRTQGULCzbUT3PHwPDTu5Brcu4iT2paP",
+            description: "hehe"
+          } as any,
+          rewardInfos: parsedData.rewardInfos.map(async(reward) => {
+            const rwAccountInfo = await connection.getAccountInfo(new PublicKey(reward.tokenMint)) as any
+            if (!rwAccountInfo) return null
+            return {
+              mint: reward.tokenMint.toString(),
+              programId: rwAccountInfo.owner.toString()
+            }
+          }),
+          tvl: 1,
+          day: {
+            volume: 1,
+            volumeFee: 1,
+            feeA: 1,
+            feeB: 1,
+            feeApr: 1,
+            rewardApr: {
+              A: 1,
+              B: 1,
+              C: 1,
+            },
+            apr: 1,
+            priceMin: 1,
+            priceMax: 1,
+          },
+          week: {
+            volume: 1,
+            volumeFee: 1,
+            feeA: 1,
+            feeB: 1,
+            feeApr: 1,
+            rewardApr: {
+              A: 1,
+              B: 1,
+              C: 1,
+            },
+            apr: 1,
+            priceMin: 1,
+            priceMax: 1,
+          },
+          month: {
+            volume: 1,
+            volumeFee: 1,
+            feeA: 1,
+            feeB: 1,
+            feeApr: 1,
+            rewardApr: {
+              A: 1,
+              B: 1,
+              C: 1,
+            },
+            apr: 1,
+            priceMin: 1,
+            priceMax: 1,
+          },
+          lookupTableAccount: "2immgwYNHBbyVQKVGCEkgWpi53bLwWNRMB5G2nbgYV17",
+          openTime: new Date().getTime() / 1000,
+          price: price
+          
+        }
+        return toReturnData
+        }
+        catch (e) {
+          console.log(e)
+        }
+        return null
+      }).filter((item) => item !== null) as any
+      const awaited = await Promise.all(response)
+      useConcentrated.setState({ apiAmmPools: awaited })
     },
     [refreshCount, clmmPoolsUrl, shouldLoadInfo]
   )

@@ -1,33 +1,61 @@
-import { ApiClmmPoolsItem, ApiPoolInfo, LiquidityPoolsJsonFile, Token, WSOL } from '@raydium-io/raydium-sdk'
+import { useEffect } from 'react'
 
-import { addItems, mergeWithOld, shakeUndifindedItem } from '@/functions/arrayMethods'
+import {
+  addItems,
+  mergeWithOld,
+  shakeUndifindedItem
+} from '@/functions/arrayMethods'
+import { createCachedFunction } from '@/functions/createCachedFunction'
 import jFetch from '@/functions/dom/jFetch'
 import listToMap from '@/functions/format/listToMap'
 import toPubString, { toPub } from '@/functions/format/toMintString'
-import { isArray, isObject } from '@/functions/judgers/dateType'
+import {
+  isArray,
+  isObject
+} from '@/functions/judgers/dateType'
+import { makeAbortable } from '@/functions/makeAbortable'
+import { mergeObjects } from '@/functions/mergeObjects'
 import { isSubSet } from '@/functions/setMethods'
 import { useIsomorphicLayoutEffect } from '@/hooks/useIsomorphicLayoutEffect'
-import { HexAddress, SrcAddress } from '@/types/constants'
+import {
+  HexAddress,
+  SrcAddress
+} from '@/types/constants'
+import {
+  ApiClmmPoolsItem,
+  ApiPoolInfo,
+  LiquidityPoolsJsonFile,
+  Token,
+  WSOL
+} from '@raydium-io/raydium-sdk'
+import {
+  TOKEN_2022_PROGRAM_ID,
+  TOKEN_PROGRAM_ID
+} from '@solana/spl-token'
 
-import { objectMap, replaceValue } from '../../functions/objectMethods'
+import {
+  objectMap,
+  replaceValue
+} from '../../functions/objectMethods'
 import useAppAdvancedSettings from '../common/useAppAdvancedSettings'
 import useConcentrated from '../concentrated/useConcentrated'
 import useFarms from '../farms/useFarms'
 import useLiquidity from '../liquidity/useLiquidity'
-import { fetchUpdatePoolInfo, parseAndSetPoolList } from '../liquidity/useLiquidityInfoLoader'
+import {
+  fetchUpdatePoolInfo,
+  parseAndSetPoolList
+} from '../liquidity/useLiquidityInfoLoader'
 import { usePools } from '../pools/usePools'
 import { useSwap } from '../swap/useSwap'
 import useWallet from '../wallet/useWallet'
-
-import { createCachedFunction } from '@/functions/createCachedFunction'
-import { makeAbortable } from '@/functions/makeAbortable'
-import { mergeObjects } from '@/functions/mergeObjects'
-import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token'
-import { useEffect } from 'react'
 import { initiallySortTokens } from './initiallySortTokens'
 import { isToken2022 } from './isToken2022'
 import { mergeToken } from './mergeToken'
-import { QuantumSOL, QuantumSOLVersionSOL, QuantumSOLVersionWSOL } from './quantumSOL'
+import {
+  QuantumSOL,
+  QuantumSOLVersionSOL,
+  QuantumSOLVersionWSOL
+} from './quantumSOL'
 import { rawTokenListConfigs } from './rawTokenLists.config'
 import {
   RaydiumDevTokenListJsonFile,
@@ -368,8 +396,10 @@ export function createSplToken(
   const token = createCachedFunction(() => {
     const { mint, symbol, name, decimals, extensions, ...rest } = info
     // TODO: recordPubString(token.mint)
-    const splToken = mergeObjects(
-      new Token(tokenIsToken2022() ? TOKEN_2022_PROGRAM_ID : TOKEN_PROGRAM_ID, mint, decimals, symbol, name ?? symbol),
+    let splToken;
+    
+      splToken = mergeObjects(
+      new Token(tokenIsToken2022() ? TOKEN_2022_PROGRAM_ID.toBase58() : TOKEN_PROGRAM_ID.toBase58(), mint, decimals, symbol, name ?? symbol),
       { id: mint },
       rest
     )
@@ -403,7 +433,8 @@ export function createSplToken(
             case 'icon':
               return customTokenIcons?.[info.mint] ?? info.icon
             default:
-              return info[key] ?? target[key] ?? token()[key]
+                return info[key] ?? target[key] ?? token()[key]
+         
           }
         })()
         Reflect.set(target, key, v)
@@ -411,7 +442,10 @@ export function createSplToken(
       },
       set: (target, p, newValue) => Reflect.set(target, p, newValue),
       has: (_target, key) => splTokenKeys.includes(key as string),
-      getPrototypeOf: () => Object.getPrototypeOf(token()),
+      getPrototypeOf: () =>{
+          return Object.getPrototypeOf(token())
+     
+      },
       ownKeys: () => splTokenKeys,
       // for Object.keys to filter
       getOwnPropertyDescriptor: (_target, prop) => ({

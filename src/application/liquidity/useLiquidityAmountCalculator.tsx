@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
 
-import { jsonInfo2PoolKeys, Liquidity, ApiPoolInfoItem } from '@raydium-io/raydium-sdk'
-
 import useAppSettings from '@/application/common/useAppSettings'
-import { deUIToken, deUITokenAmount, toUITokenAmount } from '@/application/token/quantumSOL'
+import {
+  deUIToken,
+  deUITokenAmount,
+  toUITokenAmount
+} from '@/application/token/quantumSOL'
 import { SplToken } from '@/application/token/type'
 import toPubString from '@/functions/format/toMintString'
 import { toPercent } from '@/functions/format/toPercent'
@@ -11,11 +13,18 @@ import { toTokenAmount } from '@/functions/format/toTokenAmount'
 import { eq } from '@/functions/numberish/compare'
 import { shakeZero } from '@/functions/numberish/shakeZero'
 import useAsyncEffect from '@/hooks/useAsyncEffect'
-import { HexAddress, Numberish } from '@/types/constants'
+import {
+  HexAddress,
+  Numberish
+} from '@/types/constants'
+import {
+  ApiPoolInfoItem,
+  jsonInfo2PoolKeys,
+  Liquidity
+} from '@raydium-io/raydium-sdk'
 
 import { hasSameItems } from '../../functions/arrayMethods'
 import useConnection from '../connection/useConnection'
-
 import { SDKParsedLiquidityInfo } from './type'
 import useLiquidity from './useLiquidity'
 
@@ -34,6 +43,8 @@ export default function useLiquidityAmountCalculator() {
   const coin2 = useLiquidity((s) => s.coin2)
   const userCoin1Amount = useLiquidity((s) => s.coin1Amount)
   const userCoin2Amount = useLiquidity((s) => s.coin2Amount)
+  console.log('userCoin1Amount: ', userCoin1Amount)
+  console.log('userCoin2Amount: ', userCoin2Amount)
   const focusSide = useLiquidity((s) => s.focusSide)
   const refreshCount = useLiquidity((s) => s.refreshCount)
 

@@ -1,12 +1,19 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-
-import { TokenAmount, ZERO } from '@raydium-io/raydium-sdk'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 import Decimal from 'decimal.js'
 import { twMerge } from 'tailwind-merge'
 
 import useAppSettings from '@/application/common/useAppSettings'
-import { getPriceTick, getTickPrice } from '@/application/concentrated/getNearistDataPoint'
+import {
+  getPriceTick,
+  getTickPrice
+} from '@/application/concentrated/getNearistDataPoint'
 import txCreateNewConcentratedPool from '@/application/concentrated/txCreateNewConcentratedPool'
 import { HydratedConcentratedInfo } from '@/application/concentrated/type'
 import { useAutoCreateClmmPool } from '@/application/concentrated/useAutoCreateClmmPool'
@@ -33,7 +40,10 @@ import toUsdVolume from '@/functions/format/toUsdVolume'
 import { isMintEqual } from '@/functions/judgers/areEqual'
 import { isMeaningfulNumber } from '@/functions/numberish/compare'
 import { trimTailingZero } from '@/functions/numberish/handleZero'
-import { div, mul } from '@/functions/numberish/operations'
+import {
+  div,
+  mul
+} from '@/functions/numberish/operations'
 import parseNumberInfo from '@/functions/numberish/parseNumberInfo'
 import toBN from '@/functions/numberish/toBN'
 import toFraction from '@/functions/numberish/toFraction'
@@ -44,10 +54,16 @@ import { useSwapTwoElements } from '@/hooks/useSwapTwoElements'
 import useToggle from '@/hooks/useToggle'
 import { useToken2022FeeTooHighWarningChecker } from '@/hooks/useToken2022FeeTooHighWarningChecker'
 import { Numberish } from '@/types/constants'
+import {
+  TokenAmount,
+  ZERO
+} from '@raydium-io/raydium-sdk'
 
-import { calculateRatio, RemainSOLAlert } from '../Concentrated'
+import {
+  calculateRatio,
+  RemainSOLAlert
+} from '../Concentrated'
 import TokenSelectorDialog from '../dialogs/TokenSelectorDialog'
-
 import { CreateFeeSwitcher } from './CreateFeeSwitcher'
 import CreatePoolPreviewDialog from './CreatePoolPreviewDialog'
 import EmptyCoinInput from './EmptyCoinInput'
@@ -75,6 +91,7 @@ export function CreatePoolCard() {
 
   const isApprovePanelShown = useAppSettings((s) => s.isApprovePanelShown)
   const currentAmmPool = useConcentrated((s) => s.currentAmmPool)
+  console.log(currentAmmPool)
   const coin1 = useConcentrated((s) => s.coin1)
   const coin2 = useConcentrated((s) => s.coin2)
   const coin1Amount = useConcentrated((s) => s.coin1Amount)
@@ -172,7 +189,7 @@ export function CreatePoolCard() {
       : [false, false]
 
   if (!isFocus1) inputDisable.reverse()
-  const [coin1InputDisabled, coin2InputDisabled] = inputDisable
+  const [coin1InputDisabled, coin2InputDisabled] = [false,false]
 
   const swapElementBox1 = useRef<HTMLDivElement>(null)
   const swapElementBox2 = useRef<HTMLDivElement>(null)
@@ -207,16 +224,18 @@ export function CreatePoolCard() {
   useEffect(() => useConcentrated.setState({ totalDeposit }), [totalDeposit])
 
   const blurCheckTickRef = useRef<boolean>(false)
-  const isEmptyPoolData = !coin1 || !coin2 || !currentAmmPool
+  const isEmptyPoolData = !coin1 || !coin2 
   const handleChangeFocus = useCallback((focusSide) => useConcentrated.setState({ focusSide }), [])
   const handleSelectToken = useCallback((token, tokenKey) => useConcentrated.setState({ [tokenKey!]: token }), [])
   const handlePriceChange = useEvent(({ side, val }) => {
+    console.log(coin1, coin2);
     if (isEmptyPoolData) return
     const res = getPriceTick({
       p: val,
       coin1,
       coin2,
       reverse: !isFocus1,
+      // @ts-ignore
       ammPool: currentAmmPool
     })
     if (!res) return
@@ -300,6 +319,7 @@ export function CreatePoolCard() {
 
   const handleClickInDecrease = useEvent(
     ({ val, side, isIncrease }: { val?: number | string; side: Range; isIncrease: boolean }) => {
+      console.log(coin1, coin2, currentAmmPool, val, side, isIncrease); 
       if (!currentAmmPool || !coin1 || !coin2 || !val) return 0
       blurTimerRef && clearTimeout(blurTimerRef.current)
       blurCheckTickRef.current = false
@@ -313,7 +333,7 @@ export function CreatePoolCard() {
         baseIn: isMintEqual(currentAmmPool.state.mintA.mint, targetCoin?.mint),
         tick: nextTick
       })
-      const priceNum = Number(price.toFixed(decimals))
+      const priceNum = Number(price)
       if (side === Range.Low && priceNum >= position[Range.Upper]!) return Number(val)
       tickRef.current[side] = nextTick
       useConcentrated.setState(getSideState({ side, price, tick: nextTick }))
@@ -457,7 +477,7 @@ export function CreatePoolCard() {
         <div className={currentAmmPool ? '' : 'opacity-50'}>
           <div className="text-secondary-title font-medium mb-2">Set Price Range</div>
           <PriceRangeInput
-            decimals={Math.max(parseNumberInfo(userSettedCurrentPrice).dec?.length ?? 0, decimals)}
+            decimals={Math.max(parseNumberInfo(userSettedCurrentPrice).dec?.length ?? 4, decimals)}
             minValue={toString(position[Range.Low])}
             maxValue={toString(position[Range.Upper])}
             onBlur={handleBlur}

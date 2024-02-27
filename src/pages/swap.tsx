@@ -1,4 +1,12 @@
-import { createRef, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  createRef,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 import { twMerge } from 'tailwind-merge'
 
@@ -27,7 +35,10 @@ import {
 } from '@/application/token/quantumSOL'
 import { SplToken } from '@/application/token/type'
 import useToken, { RAYDIUM_MAINNET_TOKEN_LIST_NAME } from '@/application/token/useToken'
-import { USDCMint, USDTMint } from '@/application/token/wellknownToken.config'
+import {
+  USDCMint,
+  USDTMint
+} from '@/application/token/wellknownToken.config'
 import useWallet from '@/application/wallet/useWallet'
 import { AddressItem } from '@/components/AddressItem'
 import { Badge } from '@/components/Badge'
@@ -47,7 +58,10 @@ import RefreshCircle from '@/components/RefreshCircle'
 import Row from '@/components/Row'
 import Tabs from '@/components/Tabs'
 import Tooltip from '@/components/Tooltip'
-import { addItem, shakeFalsyItem } from '@/functions/arrayMethods'
+import {
+  addItem,
+  shakeFalsyItem
+} from '@/functions/arrayMethods'
 import { toUTC } from '@/functions/date/dateFormat'
 import parseDuration from '@/functions/date/parseDuration'
 import formatNumber from '@/functions/format/formatNumber'
@@ -55,8 +69,18 @@ import toPubString from '@/functions/format/toMintString'
 import toPercentString from '@/functions/format/toPercentString'
 import { toTokenAmount } from '@/functions/format/toTokenAmount'
 import { isMintEqual } from '@/functions/judgers/areEqual'
-import { eq, gt, gte, isMeaningfulNumber, lt, lte } from '@/functions/numberish/compare'
-import { div, mul } from '@/functions/numberish/operations'
+import {
+  eq,
+  gt,
+  gte,
+  isMeaningfulNumber,
+  lt,
+  lte
+} from '@/functions/numberish/compare'
+import {
+  div,
+  mul
+} from '@/functions/numberish/operations'
 import { toString } from '@/functions/numberish/toString'
 import createContextStore from '@/functions/react/createContextStore'
 import useAsyncMemo from '@/hooks/useAsyncMemo'
@@ -66,7 +90,10 @@ import useLocalStorageItem from '@/hooks/useLocalStorage'
 import { useRecordedEffect } from '@/hooks/useRecordedEffect'
 import useToggle from '@/hooks/useToggle'
 import TokenSelectorDialog from '@/pageComponents/dialogs/TokenSelectorDialog'
-import { HexAddress, Numberish } from '@/types/constants'
+import {
+  HexAddress,
+  Numberish
+} from '@/types/constants'
 
 import { useToken2022SwapConfirmPanel } from '../application/token/useToken2022SwapConfirmPanel'
 import { useSwapTwoElements } from '../hooks/useSwapTwoElements'

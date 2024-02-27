@@ -6,7 +6,10 @@
 
 import useAppSettings from '@/application/common/useAppSettings'
 import useConnection from '@/application/connection/useConnection'
-import { deUIToken, deUITokenAmount } from '@/application/token/quantumSOL'
+import {
+  deUIToken,
+  deUITokenAmount
+} from '@/application/token/quantumSOL'
 import { SplToken } from '@/application/token/type'
 import { shakeUndifindedItem } from '@/functions/arrayMethods'
 import assert from '@/functions/assert'
@@ -15,30 +18,38 @@ import jFetch from '@/functions/dom/jFetch'
 import toPubString, { toPub } from '@/functions/format/toMintString'
 import { toPercent } from '@/functions/format/toPercent'
 import { toTokenAmount } from '@/functions/format/toTokenAmount'
-import { isArray, isObject, isPubKeyish } from '@/functions/judgers/dateType'
+import {
+  isArray,
+  isObject,
+  isPubKeyish
+} from '@/functions/judgers/dateType'
 import { Numberish } from '@/types/constants'
 import {
   ApiClmmPoolsItem,
   ApiPoolInfo,
+  ApiPoolInfoItem,
   Clmm,
   ClmmPoolInfo,
+  fetchMultipleMintInfos,
   PoolType,
   PublicKeyish,
   ReturnTypeFetchMultipleInfo,
   ReturnTypeFetchMultipleMintInfos,
   ReturnTypeFetchMultiplePoolTickArrays,
   ReturnTypeGetAllRouteComputeAmountOut,
-  TradeV2,
-  fetchMultipleMintInfos,
-  ApiPoolInfoItem,
-  Token
+  Token,
+  TradeV2
 } from '@raydium-io/raydium-sdk'
-import { Connection, PublicKey } from '@solana/web3.js'
+import {
+  Connection,
+  PublicKey
+} from '@solana/web3.js'
+
 import { getEpochInfo } from '../clmmMigration/getEpochInfo'
 import { getSDKParsedClmmPoolInfo } from '../common/getSDKParsedClmmPoolInfo'
 import useAppAdvancedSettings from '../common/useAppAdvancedSettings'
-import { BestResultStartTimeInfo } from './type'
 import useLiquidity from '../liquidity/useLiquidity'
+import { BestResultStartTimeInfo } from './type'
 
 const apiCache = {} as {
   ammV3?: ApiClmmPoolsItem[]
@@ -86,9 +97,7 @@ async function getApiInfos(props?: { mint1: string; mint2: string }) {
     ) {
       useLiquidity.setState({ extraPoolLoading: true })
       const liquidityPoolsUrl = useAppAdvancedSettings.getState().apiUrls.searchPool
-      const response = await jFetch<ApiPoolInfoItem[]>(liquidityPoolsUrl + `${mint1}/${mint2}`, {
-        cacheFreshTime: 1000 * 60 * 30
-      })
+      const response:  ApiPoolInfoItem[] = []
       if (response && Array.isArray(response)) {
         const newPools = response.filter((pool) => !allPools.find((p) => p.id === pool.id))
         apiCache.liquidity.unOfficial.push(...newPools)
@@ -109,6 +118,7 @@ async function getApiInfos(props?: { mint1: string; mint2: string }) {
 }
 
 type PairKeyString = string
+
 
 // TODO: timeout-map
 const sdkCachesOfSwap: Map<

@@ -1,8 +1,17 @@
-import { ApiClmmPoolsItem, Clmm, ClmmPoolInfo, ClmmPoolPersonalPosition, TokenAccount } from '@raydium-io/raydium-sdk'
-import { Connection, PublicKey } from '@solana/web3.js'
 import useConnection from '@/application/connection/useConnection'
 import listToMap from '@/functions/format/listToMap'
 import toPubString from '@/functions/format/toMintString'
+import {
+  ApiClmmPoolsItem,
+  Clmm,
+  ClmmPoolInfo,
+  ClmmPoolPersonalPosition,
+  TokenAccount
+} from '@raydium-io/raydium-sdk'
+import {
+  Connection,
+  PublicKey
+} from '@solana/web3.js'
 
 const parsedClmmPoolInfoCache = new Map<
   string,
@@ -32,6 +41,7 @@ export async function getSDKParsedClmmPoolInfo({
     ? apiClmmPoolItems.filter(({ id }) => !parsedClmmPoolInfoCache.has(toPubString(id)))
     : apiClmmPoolItems
   if (needRefetchApiAmmPools.length) {
+    console.log(needRefetchApiAmmPools)
     const sdkParsedPromise = Clmm.fetchMultiplePoolInfos({
       poolKeys: needRefetchApiAmmPools,
       connection,

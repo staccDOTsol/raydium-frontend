@@ -116,6 +116,7 @@ function TokenSelectorDialogContent({
   })
 
   function isTokenDisabled(candidateToken: SplToken): boolean {
+    return false/*
     if (enableTokens) return !enableTokens.some((token) => token.mint.equals(candidateToken.mint))
     return disableTokens
       ? disableTokens.some((disableToken) => {
@@ -126,7 +127,7 @@ function TokenSelectorDialogContent({
           }
           return isMintEqual(disableToken, candidateToken)
         })
-      : false
+      : false*/
   }
 
   const allSelectableTokens = useToken((s) => s.allSelectableTokens)
